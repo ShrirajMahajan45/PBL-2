@@ -56,6 +56,27 @@ var swiper = new Swiper(".home-slider", {
   loop: true,
 });
 
+
+
+// add to cart start
+
+window.onscroll = () => {
+  menu.classList.remove('fa-times');
+  navbar.classList.remove('active');
+}
+
+document.querySelector('#cart-icon').onclick = () => {
+  document.title = 'Shoping  Cart'
+  document.querySelector('#cart-section').classList.toggle('active');
+}
+
+document.querySelector('#cart-close').onclick = () => {
+  document.querySelector('#cart-section').classList.remove('active');
+}
+// add to cart end
+
+
+
 // for review section
 var swiper = new Swiper(".review-slider", {
   spaceBetween: 20,
@@ -91,8 +112,9 @@ function fadeOut() {
 
 window.onload = fadeOut;
 
-/*
+
 // card added dynamically
+/*
 
 let str = ` `
 const cards = [
@@ -102,7 +124,8 @@ const cards = [
 
 
 cards.forEach((ele, index) => {
-  let newStr = `<div class="box" id='sai'>
+  let newStr = 
+  `<div class="box" id='sai'>
   <a href="#" class="fas fa-heart"></a>
   <a href="#" class="fas fa-eye"></a>
   <img src="Assets/image3.jpg" alt="">
@@ -124,6 +147,7 @@ cards.forEach((ele, index) => {
 
 document.querySelector('#manipulated').innerHTML = str
 
+*/
 
 // localstorage demo
 
@@ -132,23 +156,61 @@ document.querySelector('#manipulated').innerHTML = str
 //   console.log('mi call ')
 // })
 
+let rep;
+let c = 0;
 
 
+function counter() {
+  console.log("function");
+  if (rep === 0) {
+    rep++;
+    console.log("c:", c);
+    console.log("rep:", rep);
+    return c;
+  }
+  else if (rep != 0) {
+    c = c + 1;
+    console.log("c:", c);
+    return c;
+  }
 
-const addToCard = (idx) => {
-  console.log(cards[idx])
+}
 
-  if (localStorage.getItem('card') === null) {
-    let arr = []
-    arr.push(cards[idx])
+function showTotal(x) {
+  console.log("x:", x)
+
+  return x;
+}
+
+
+const addToCard = (key, name, price, imgUrl) => {
+  if (localStorage.getItem('card') === null) {    // localstorage branch container name 'card'
+    let arr = [];
+    c = 0;
+    rep = 0;
+    totalModify = 0;
+    let total = 0;
+    total = Number(price);
+    arr.push({ key, name, price, imgUrl, total })  // pushing 
     localStorage.setItem('card', JSON.stringify(arr))
+    localStorage.setItem('total', total)
+    
   }
   else {
     let value = localStorage.getItem('card');
-    let get = JSON.parse(value)
-    get.push(cards[idx])
-    localStorage.setItem('card', JSON.stringify(get))
+    let get = JSON.parse(value);
 
+
+    let prvtotal =Number(localStorage.getItem('total'))+Number(price)
+
+    get.push({ key, name, price, imgUrl, total })
+
+    localStorage.setItem('card', JSON.stringify(get))
+    localStorage.setItem('total', prvtotal)
+
+    showTotal(total)
+  
+    
   }
   location.reload();
 }
@@ -157,32 +219,51 @@ const addToCard = (idx) => {
 let addToCardStr = ''
 let addToCardArr = JSON.parse(localStorage.getItem('card'))
 
-console.log(addToCardArr)
 
 
-addToCardArr.forEach((ele, index) => {
-  let newStr = `<div class="box" id='sai'>
-  <a href="#" class="fas fa-heart"></a>
-  <a href="#" class="fas fa-eye"></a>
-  <h3 id='heading'>tasty food</h3>
-  <span>${ele.name}</span>
-  <span id='cardId'>${ele.key}</span>
-  <button class="btn" onclick=RemoveCard(${index})>-</button>
+
+
+addToCardArr?.forEach((ele, index) => {
+
+  let newStr =
+    `<div class="item-list">
+      <img src='${ele.imgUrl}' alt="">
+
+      <div class="info-box">
+          <h1 id="item-name">${ele.name}</h1>
+          <h1 id="no-item">1</h1>
+          <h3 id="remove-single-item" onclick="RemoveCard(${ele.key})">Remove</h3>
+          <h2 id="item-price">${ele.price}</h2>
+      </div>
   </div>`
   addToCardStr += newStr
 
 })
 
-document.querySelector('#addToCardSec').innerHTML = addToCardStr
+document.querySelector('#cardItems').innerHTML = addToCardStr
+document.querySelector('#total-price').innerHTML =localStorage.getItem('total');
 
 
-const RemoveCard = (idx) => {
+
+const RemoveCard = (key) => {
+  let itemIdx;
   let value = localStorage.getItem('card');
   let get = JSON.parse(value)
-  get.splice(idx, 1)
+  get.forEach((ele,idx)=>{
+      if(key === ele.key){
+        itemIdx=idx;
+      }
+  })
+  get.splice(itemIdx, 1)
   localStorage.setItem('card', JSON.stringify(get))
   location.reload();
 }
 
-*/
+const removeAll = () => {
+  const check = confirm('are you sure to delete items from add to card')
+  if (check) {
+    localStorage.clear()
+    location.reload();
+  }
+}
 
